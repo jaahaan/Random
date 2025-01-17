@@ -49,9 +49,9 @@ public class SplashScreen extends AppCompatActivity {
 
     private void initConfig() {
         Map<String, String> config = new HashMap<>();
-        config.put("cloud_name", "dvsuhuocv");
-        config.put("api_key", "894878137588268");
-        config.put("api_secret", "WbJvMe88egQcdNzo0cQdpEFjBqk");
+        config.put("cloud_name", "");
+        config.put("api_key", "");
+        config.put("api_secret", "");
 //        config.put("secure", true);
         MediaManager.init(this, config);
     }
