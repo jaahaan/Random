@@ -66,9 +66,9 @@ public class SignUpActivity extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                name = nameEditText.getText().toString();
-                email = emailEditText.getText().toString();
-                pass = passEditText.getText().toString();
+                name = nameEditText.getText().toString().trim();
+                email = emailEditText.getText().toString().trim();
+                pass = passEditText.getText().toString().trim();
 
                 if (name.isEmpty()){
                     nameEditText.setError("Empty!!");
@@ -80,18 +80,18 @@ public class SignUpActivity extends AppCompatActivity {
                     emailEditText.setError("Empty!!");
                     emailEditText.requestFocus();
                 }
-//                else if (!emailPattern.matcher(email).matches()){
-//                    emailEditText.setError("Only LU student email is allowed");
-//                    emailEditText.requestFocus();
-//                }
+                else if (!emailPattern.matcher(email).matches()){
+                    emailEditText.setError("Only LU student email is allowed");
+                    emailEditText.requestFocus();
+                }
                 else if (pass.isEmpty()){
                     passEditText.setError("Empty!!");
                     passEditText.requestFocus();
                 }
-//                else if (!passPattern.matcher(pass).matches()){
-//                    passEditText.setError("At least one uppercase, lowercase, digit, special character, and password length between 8-20");
-//                    passEditText.requestFocus();
-//                }
+                else if (!passPattern.matcher(pass).matches()){
+                    passEditText.setError("At least one uppercase, lowercase, digit, special character, and password length between 8-20");
+                    passEditText.requestFocus();
+                }
                 else {
                     progressBar.setVisibility(View.VISIBLE);
                     auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener( new OnCompleteListener<AuthResult>() {
@@ -101,13 +101,14 @@ public class SignUpActivity extends AppCompatActivity {
                             if (task.isSuccessful()){
                                 FirebaseUser user = auth.getCurrentUser();
                                 sendEmailVerification(user);  // Send email verification
-
                                 assert user != null;
                                 DocumentReference df = firestore.collection("Users").document(user.getUid());
                                 Map<String, String> userInfo = new HashMap<>();
-                                userInfo.put("email", user.getEmail());
+                                userInfo.put("email", email);
                                 userInfo.put("name", name);
                                 userInfo.put("uid", user.getUid());
+                                userInfo.put("admin", "0");
+
                                 df.set(userInfo);
                                 Toast.makeText(getApplicationContext(), "Successfully Registered!!", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(getApplicationContext(), SignInActivity.class));

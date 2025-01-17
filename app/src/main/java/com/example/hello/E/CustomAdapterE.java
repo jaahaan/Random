@@ -41,14 +41,14 @@ public class CustomAdapterE extends RecyclerView.Adapter<CustomAdapterE.holder> 
         ModelE temp = data.get(position);
         holder.title.setText(temp.getTitle());
         holder.subtitle.setText(temp.getSubtitle());
-        holder.imageView.setImageResource(temp.getImageId());
+//        holder.imageView.setImageResource(temp.getImageId());
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, RecyclerDescriptionActivity.class);
                 intent.putExtra("title", temp.getTitle());
                 intent.putExtra("subtitle", temp.getSubtitle());
-                intent.putExtra("imageId", temp.getImageId());
+//                intent.putExtra("imageId", temp.getImageId());
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
             }

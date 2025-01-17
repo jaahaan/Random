@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -7,78 +7,41 @@
     android:layout_height="match_parent"
     tools:context=".B.B">
 
-   <LinearLayout
+   <com.google.android.material.floatingactionbutton.FloatingActionButton
+       android:id="@+id/fab"
+       style="@style/Widget.Design.FloatingActionButton"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_gravity="bottom|end"
+       android:layout_margin="16dp"
+       android:contentDescription="TODO"
+       android:elevation="3dp"
+       android:src="@drawable/baseline_add_24"
+       app:fabSize="normal" />
+
+   <androidx.recyclerview.widget.RecyclerView
        android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       android:orientation="vertical"
-       android:layout_margin="30dp"
-       android:gravity="center"
-       >
-      <TextView
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:text="Add Item"
-          android:textAlignment="center"
-          android:textSize="25sp"
-          android:layout_marginBottom="20dp"
-          android:textStyle="bold"
-          />
-      <LinearLayout
-          android:id="@+id/inputLayout"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:background="@drawable/card_bg"
-          android:padding="30dp"
-          android:gravity="center"
-          android:orientation="vertical">
+       android:layout_height="wrap_content"
+       android:id="@+id/recyclerView"
+       android:layout_margin="10dp"
+       />
 
-         <de.hdodenhof.circleimageview.CircleImageView
-             android:id="@+id/imageView"
-             android:layout_width="150dp"
-             android:layout_height="150dp"
-             android:src="@drawable/android"
-             android:layout_marginBottom="20dp"
-             />
-
-         <EditText
-             android:id="@+id/title"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:hint="Title"
-             android:inputType="text"
-             android:background="@drawable/border"
-             android:padding="20dp"
-             android:layout_marginBottom="10dp"
-             />
-         <EditText
-             android:id="@+id/subtitle"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:hint="Subtitle"
-             android:inputType="text"
-             android:background="@drawable/border"
-             android:padding="20dp"
-             android:layout_marginBottom="10dp"
-             />
-
-         <Button
-             android:id="@+id/add"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:text="Add"
-             />
-
-      </LinearLayout>
-   </LinearLayout>
-   <androidx.coordinatorlayout.widget.CoordinatorLayout
+   <TextView
+       android:id="@+id/noData"
        android:layout_width="match_parent"
-       android:layout_height="match_parent">
-      <ProgressBar
-          android:id="@+id/progressBar"
-          android:layout_width="100dp"
-          android:layout_height="100dp"
-          android:layout_gravity="center"
-          android:visibility="gone"
-          />
-   </androidx.coordinatorlayout.widget.CoordinatorLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+       android:layout_height="wrap_content"
+       android:text="No data Found"
+       android:textAlignment="center"
+       android:layout_gravity="center"
+       android:textSize="30sp"
+       android:visibility="gone"
+       />
+
+   <ProgressBar
+       android:id="@+id/progressBar"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_gravity="center"
+       android:visibility="visible" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

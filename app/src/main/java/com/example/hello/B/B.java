@@ -23,6 +23,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.cloudinary.android.MediaManager;
 import com.cloudinary.android.callback.ErrorInfo;
@@ -30,34 +32,39 @@ import com.cloudinary.android.callback.UploadCallback;
 import com.example.hello.R;
 import com.example.hello.auth.SignInActivity;
 import com.example.hello.tech.AddTechActivity;
+import com.example.hello.tech.TechModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 public class B extends AppCompatActivity {
 
-    private ImageView imageView;
-    private Uri imagePath;
-    private static final int IMAGE_REQ = 1;
-    private EditText titleEditText, subtitleEditText;
-    private String  title, subtitle;
-    private Button button;
-    private DatabaseReference reference;
+    private RecyclerView recyclerView;
+    private FloatingActionButton floatingActionButton;
+    private TextView textView;
     private ProgressBar progressBar;
+    private DatabaseReference reference;
+    private ArrayList<ModelB> arrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,121 +76,35 @@ public class B extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        imageView = findViewById(R.id.imageView);
-        titleEditText = findViewById(R.id.title);
-        subtitleEditText = findViewById(R.id.subtitle);
-        button = findViewById(R.id.add);
+        recyclerView = findViewById(R.id.recyclerView);
+        floatingActionButton = findViewById(R.id.fab);
+        textView = findViewById(R.id.noData);
         progressBar = findViewById(R.id.progressBar);
-        reference = FirebaseDatabase.getInstance().getReference().child("Tech");
-
-        imageView.setOnClickListener(new View.OnClickListener() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        reference = FirebaseDatabase.getInstance().getReference().child("Tech Items");
+        Query query = reference.orderByChild("title");
+        reference.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(B.this, Manifest.permission.READ_MEDIA_IMAGES)
-                        == PackageManager.PERMISSION_GRANTED) {
-                    Intent intent = new Intent();
-                    intent.setType("image/*");
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                    startActivityForResult(intent, IMAGE_REQ);
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                arrayList = new ArrayList<>();
+                progressBar.setVisibility(View.GONE);
+                if (snapshot.exists()){
+                    for (DataSnapshot snapshot1:snapshot.getChildren()){
+                        ModelB data = snapshot1.getValue(ModelB.class);
+                        arrayList.add(data);
+                    }
+                    CustomAdapterB adapterB = new CustomAdapterB(arrayList);
+                    recyclerView.setAdapter(adapterB);
                 } else {
-//                Toast.makeText(this, "PERMISSION_DENIED", Toast.LENGTH_SHORT).show();
-                    ActivityCompat.requestPermissions(B.this, new String[] {
-                            Manifest.permission.READ_MEDIA_IMAGES
-                    }, IMAGE_REQ);
+                    textView.setVisibility(View.generateViewId());
                 }
             }
-        });
 
-        button.setOnClickListener(v -> {
-            title = titleEditText.getText().toString();
-            subtitle = subtitleEditText.getText().toString();
-            if (title.isEmpty()){
-                titleEditText.setError("Empty!!");
-                titleEditText.requestFocus();
-            } else if (subtitle.isEmpty()){
-                subtitleEditText.setError("Empty!!");
-                subtitleEditText.requestFocus();
-            } else if (imagePath == null) {
-                Toast.makeText(this, "Please select an image!!", Toast.LENGTH_SHORT).show();
-            } else{
-                progressBar.setVisibility(View.VISIBLE);
-                uploadImage();
-
-//                DocumentReference documentReference = firestore.collection("Tech Items").document();
-//                TechModel data = new TechModel(title, subtitle);
-//                documentReference.set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
-//                    @Override
-//                    public void onSuccess(Void unused) {
-//                        titleEditText.setText("");
-//                        subtitleEditText.setText("");
-//                        Toast.makeText(getApplicationContext(), "Added Successfully!!", Toast.LENGTH_SHORT).show();
-//
-//                    }
-//                });
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
             }
         });
-    }
-
-    private void uploadImage() {
-        MediaManager.get().upload(imagePath).callback(new UploadCallback() {
-            @Override
-            public void onStart(String requestId) {
-
-            }
-
-            @Override
-            public void onProgress(String requestId, long bytes, long totalBytes) {
-
-            }
-
-            @Override
-            public void onSuccess(String requestId, Map resultData) {
-                Log.d("tag", resultData.toString());
-                String url = (String) resultData.get("secure_url");
-                uploadData(url);
-            }
-
-            @Override
-            public void onError(String requestId, ErrorInfo error) {
-
-            }
-
-            @Override
-            public void onReschedule(String requestId, ErrorInfo error) {
-
-            }
-        }).dispatch();
-    }
-
-    private void uploadData(String url) {
-        String key = reference.push().getKey();
-        ModelB data = new ModelB(title, subtitle, url, key);
-        reference.child(key).setValue(data).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                titleEditText.setText("");
-                subtitleEditText.setText("");
-                imagePath = null;
-                imageView.setImageResource(R.drawable.android);
-                Toast.makeText(getApplicationContext(), "Added Successfully!!", Toast.LENGTH_SHORT).show();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-
-            }
-        });
-
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == IMAGE_REQ && resultCode == RESULT_OK && data != null){
-            imagePath = data.getData();
-            Picasso.get().load(imagePath).into(imageView);
-        }
     }
 
 

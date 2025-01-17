@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.hello.R;
 import com.example.hello.recyclerView.RecyclerDescriptionActivity;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -39,16 +40,16 @@ public class CustomAdapterD  extends RecyclerView.Adapter<CustomAdapterD.holder>
     @Override
     public void onBindViewHolder(@NonNull holder holder, int position) {
         ModelD data = list.get(position);
-        holder.imageView.setImageResource(data.getImageId());
         holder.title.setText(data.getTitle());
         holder.subtitle.setText(data.getSubtitle());
-        holder.layout.setOnClickListener(new View.OnClickListener() {
+        Picasso.get().load(data.getImageUrl()).into(holder.imageView);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, RecyclerDescriptionActivity.class);
                 intent.putExtra("title", data.getTitle());
                 intent.putExtra("subtitle", data.getSubtitle());
-                intent.putExtra("imgId", data.getImageId());
+                intent.putExtra("imgId", data.getImageUrl());
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
             }

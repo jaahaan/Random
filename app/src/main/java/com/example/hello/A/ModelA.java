@@ -1,8 +1,10 @@
 package com.example.hello.A;
 
 public class ModelA {
-
     private String title, subtitle, imageUrl, key;
+
+    public ModelA() {
+    }
 
     public ModelA(String title, String subtitle, String imageUrl, String key) {
         this.title = title;

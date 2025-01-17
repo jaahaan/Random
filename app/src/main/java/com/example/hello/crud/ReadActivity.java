@@ -1,83 +1,51 @@
-package com.example.hello.A;
+package com.example.hello.crud;
 
-import android.Manifest;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.cloudinary.android.MediaManager;
-import com.cloudinary.android.callback.ErrorInfo;
-import com.cloudinary.android.callback.UploadCallback;
 import com.example.hello.R;
-import com.example.hello.auth.SignInActivity;
-import com.example.hello.tech.AddTechActivity;
-import com.example.hello.tech.TechAdapter;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
 
-public class A extends AppCompatActivity {
-
+public class ReadActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
-    private FloatingActionButton floatingActionButton;
+    private FloatingActionButton fab;
     private TextView textView;
     private ProgressBar progressBar;
     private DatabaseReference reference;
-    private ArrayList<ModelA> arrayList;
+    private ArrayList<Model> arrayList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_a);
+        setContentView(R.layout.activity_read);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
         recyclerView = findViewById(R.id.recyclerView);
-//        floatingActionButton = findViewById(R.id.fab);
-        textView = findViewById(R.id.textView);
+        fab = findViewById(R.id.fab);
+        textView = findViewById(R.id.noData);
         progressBar = findViewById(R.id.progressBar);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         reference = FirebaseDatabase.getInstance().getReference().child("Tech Items");
@@ -89,14 +57,14 @@ public class A extends AppCompatActivity {
                 progressBar.setVisibility(View.GONE);
                 if (snapshot.exists()){
                     for (DataSnapshot snapshot1:snapshot.getChildren()){
-                        ModelA data = snapshot1.getValue(ModelA.class);
+                        Model data = snapshot1.getValue((Model.class));
                         arrayList.add(data);
                     }
-                    CustomAdapterA adapter = new CustomAdapterA(arrayList, getApplicationContext());
+                    CustomAdapter adapter = new CustomAdapter(arrayList, ReadActivity.this);
                     recyclerView.setAdapter(adapter);
                 } else {
-                    recyclerView.setVisibility(View.GONE);
                     textView.setVisibility(View.VISIBLE);
+                    recyclerView.setVisibility(View.GONE);
                 }
             }
 
@@ -105,8 +73,5 @@ public class A extends AppCompatActivity {
 
             }
         });
-
     }
-
-
 }

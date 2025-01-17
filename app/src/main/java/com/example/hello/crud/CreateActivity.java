@@ -1,4 +1,4 @@
-package com.example.hello.D;
+package com.example.hello.crud;
 
 import android.Manifest;
 import android.content.Intent;
@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -24,41 +23,26 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.cloudinary.android.MediaManager;
 import com.cloudinary.android.callback.ErrorInfo;
 import com.cloudinary.android.callback.UploadCallback;
 import com.example.hello.R;
-import com.example.hello.auth.SignInActivity;
 import com.example.hello.tech.AddTechActivity;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
-public class D extends AppCompatActivity {
-
+public class CreateActivity extends AppCompatActivity {
     private ImageView imageView;
-    private Uri imagePath;
     private static final int IMAGE_REQ = 1;
     private EditText titleEditText, subtitleEditText;
-    private String  title, subtitle;
+    private String title, subtitle, image;
+    private Uri imagePath;
     private Button button;
     private DatabaseReference reference;
     private ProgressBar progressBar;
@@ -68,7 +52,7 @@ public class D extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_d);
+        setContentView(R.layout.activity_create);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -80,35 +64,35 @@ public class D extends AppCompatActivity {
         subtitleEditText = findViewById(R.id.subtitle);
         button = findViewById(R.id.add);
         progressBar = findViewById(R.id.progressBar);
-
         reference = FirebaseDatabase.getInstance().getReference().child("Tech Items");
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(D.this, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(CreateActivity.this, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED){
                     Intent intent = new Intent();
                     intent.setType("image/*");
                     intent.setAction(Intent.ACTION_GET_CONTENT);
                     startActivityForResult(intent, IMAGE_REQ);
                 } else {
-                    ActivityCompat.requestPermissions(D.this, new String[]{
+                    ActivityCompat.requestPermissions(CreateActivity.this, new String[]{
                             Manifest.permission.READ_MEDIA_IMAGES
                     }, IMAGE_REQ);
                 }
             }
         });
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 title = titleEditText.getText().toString().trim();
                 subtitle = subtitleEditText.getText().toString().trim();
-                if (imagePath == null) {
-                    Toast.makeText(D.this, "Please select an image!!", Toast.LENGTH_SHORT).show();
-                } else if (title.isEmpty()){
-                    titleEditText.setError("Empty!!");
+                if (imagePath == null){
+                    Toast.makeText(CreateActivity.this, "Please Select an Image", Toast.LENGTH_SHORT).show();
+                } else if(title.isEmpty()){
+                    titleEditText.setError("Empty");
                     titleEditText.requestFocus();
-                } else if (subtitle.isEmpty()){
-                    subtitleEditText.setError("Empty!!");
+                } else if(subtitle.isEmpty()){
+                    subtitleEditText.setError("Empty");
                     subtitleEditText.requestFocus();
                 } else {
                     progressBar.setVisibility(View.VISIBLE);
@@ -132,8 +116,8 @@ public class D extends AppCompatActivity {
 
             @Override
             public void onSuccess(String requestId, Map resultData) {
-                String imageUrl = (String) resultData.get("secure_url");
-                uploadData(imageUrl);
+                image = (String) resultData.get("secure_url");
+                uploadData(image);
             }
 
             @Override
@@ -148,26 +132,31 @@ public class D extends AppCompatActivity {
         }).dispatch();
     }
 
-    private void uploadData(String imageUrl) {
+    private void uploadData(String image) {
         String key = reference.push().getKey();
-        ModelD modelD = new ModelD(title, subtitle, imageUrl, key);
-        reference.child(key).setValue(modelD).addOnSuccessListener(new OnSuccessListener<Void>() {
+        Model data = new Model(title, subtitle, image, key);
+        reference.child(key).setValue(data).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
-                progressBar.setVisibility(View.GONE);
                 titleEditText.setText("");
                 subtitleEditText.setText("");
                 imagePath = null;
                 imageView.setImageResource(R.drawable.android);
-                Toast.makeText(getApplicationContext(), "Added Successfully!!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CreateActivity.this, "Added Successfully!!", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(CreateActivity.this, "Failed " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+        progressBar.setVisibility(View.GONE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == IMAGE_REQ && resultCode == RESULT_OK && data!=null){
+        if (requestCode == IMAGE_REQ && resultCode == RESULT_OK && data != null){
             imagePath = data.getData();
             Picasso.get().load(imagePath).into(imageView);
         }

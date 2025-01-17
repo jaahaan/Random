@@ -3,6 +3,9 @@ package com.example.hello.B;
 public class ModelB {
     private String title, subtitle, imageUrl, key;
 
+    public ModelB(){
+
+    }
     public ModelB(String title, String subtitle, String imageUrl, String key) {
         this.title = title;
         this.subtitle = subtitle;

@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,34 +32,36 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class AddTechActivity extends AppCompatActivity {
+public class EditTechActivity extends AppCompatActivity {
+
     private ImageView imageView;
     private Uri imagePath;
     private static final int IMAGE_REQ = 1;
     private EditText titleEditText, subtitleEditText;
-    private String  title, subtitle;
+    private String  title, subtitle, image;
     private Button button;
     private DatabaseReference reference;
     private ProgressBar progressBar;
-    private static final  String tag = "image";
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_add_tech);
+        setContentView(R.layout.activity_edit_tech);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        title = getIntent().getStringExtra("title");
+        subtitle = getIntent().getStringExtra("subtitle");
+        image = getIntent().getStringExtra("image");
 
         imageView = findViewById(R.id.imageView);
         titleEditText = findViewById(R.id.title);
@@ -68,15 +69,24 @@ public class AddTechActivity extends AppCompatActivity {
         button = findViewById(R.id.add);
         progressBar = findViewById(R.id.progressBar);
         reference = FirebaseDatabase.getInstance().getReference().child("Tech Items");
+
+        try {
+            Picasso.get().load(image).into(imageView);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        titleEditText.setText(title);
+        subtitleEditText.setText(subtitle);
+
         imageView.setOnClickListener(v -> {
-            if (ContextCompat.checkSelfPermission(AddTechActivity.this, Manifest.permission.READ_MEDIA_IMAGES)
+            if (ContextCompat.checkSelfPermission(EditTechActivity.this, Manifest.permission.READ_MEDIA_IMAGES)
                     == PackageManager.PERMISSION_GRANTED) {
                 Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(intent, IMAGE_REQ);
             } else {
-                ActivityCompat.requestPermissions(AddTechActivity.this, new String[] {
+                ActivityCompat.requestPermissions(EditTechActivity.this, new String[] {
                         Manifest.permission.READ_MEDIA_IMAGES
                 }, IMAGE_REQ);
             }
@@ -92,12 +102,14 @@ public class AddTechActivity extends AppCompatActivity {
                 subtitleEditText.setError("Empty!!");
                 subtitleEditText.requestFocus();
             } else if (imagePath == null) {
-                Toast.makeText(this, "Please select an image!!", Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.VISIBLE);
+                uploadData(image);
             } else{
                 progressBar.setVisibility(View.VISIBLE);
                 uploadImage();
             }
         });
+
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -113,15 +125,17 @@ public class AddTechActivity extends AppCompatActivity {
             @Override
             public void onStart(String requestId) {
             }
+
             @Override
             public void onProgress(String requestId, long bytes, long totalBytes) {
             }
+
             @Override
             public void onSuccess(String requestId, Map resultData) {
-                Log.d(tag, resultData.toString());
                 String imageUrl = (String) resultData.get("secure_url");
                 uploadData(imageUrl);
             }
+
             @Override
             public void onError(String requestId, ErrorInfo error) {
 
@@ -134,26 +148,22 @@ public class AddTechActivity extends AppCompatActivity {
     }
 
     private void uploadData(String imageUrl) {
-        String key = reference.push().getKey();
-        Log.d(tag, "imageUrl " + imageUrl);
-        TechModel data = new TechModel(title, subtitle, imageUrl, key);
-        assert key != null;
+        String key = getIntent().getStringExtra("key");
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("title", title);
+        data.put("subtitle", subtitle);
+        data.put("imageUrl", imageUrl);
+        data.put("key", key);
         progressBar.setVisibility(View.GONE);
 
-        reference.child(key).setValue(data).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                titleEditText.setText("");
-                subtitleEditText.setText("");
-                imagePath = null;
-                imageView.setImageResource(R.drawable.android);
-                Toast.makeText(getApplicationContext(), "Added Successfully!!", Toast.LENGTH_SHORT).show();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getApplicationContext(), "Failed " + e, Toast.LENGTH_SHORT).show();
-            }
-        });
+        reference.child(key).updateChildren(data).addOnSuccessListener(unused -> {
+            titleEditText.setText("");
+            subtitleEditText.setText("");
+            imagePath = null;
+            imageView.setImageResource(R.drawable.android);
+            Toast.makeText(getApplicationContext(), "Updated Successfully!!", Toast.LENGTH_SHORT).show();
+        }).addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Failed " + e, Toast.LENGTH_SHORT).show());
     }
+
+
 }

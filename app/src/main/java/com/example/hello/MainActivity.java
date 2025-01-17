@@ -13,12 +13,17 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.hello.A.A;
+import com.example.hello.B.B;
 import com.example.hello.C.C;
+import com.example.hello.D.D;
 import com.example.hello.activities.BirthdayCardActivity;
 import com.example.hello.activities.ButtonActivity;
 import com.example.hello.activities.CalculatorActivity;
 import com.example.hello.activities.FormActivity;
 import com.example.hello.activities.OrderActivity;
+import com.example.hello.crud.CreateActivity;
+import com.example.hello.crud.ReadActivity;
 import com.example.hello.recyclerView.RecyclerViewActivity;
 import com.example.hello.auth.SignInActivity;
 import com.example.hello.activities.StatusBar;
@@ -91,8 +96,8 @@ public class MainActivity extends AppCompatActivity {
         form.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), FormActivity.class)));
         listView.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), ListViewActivity.class)));
         recycler.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), RecyclerViewActivity.class)));
-        website.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), WebViewActivity.class)));
-        tech.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), C.class)));
+        website.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), B.class)));
+        tech.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), ReadActivity.class)));
         signOut.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
             startActivity(new Intent(getApplicationContext(), SignInActivity.class));

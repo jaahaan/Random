@@ -1,14 +1,13 @@
 package com.example.hello.D;
 
 public class ModelD {
-    private String title;
-    private String subtitle;
-    private int imageId;
+    private String title, subtitle, imageUrl, key;
 
-    public ModelD(String title, String subtitle, int imageId) {
+    public ModelD(String title, String subtitle, String imageUrl, String key) {
         this.title = title;
         this.subtitle = subtitle;
-        this.imageId = imageId;
+        this.imageUrl = imageUrl;
+        this.key = key;
     }
 
     public String getTitle() {
@@ -27,11 +26,20 @@ public class ModelD {
         this.subtitle = subtitle;
     }
 
-    public int getImageId() {
-        return imageId;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImageId(int imageId) {
-        this.imageId = imageId;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }
+

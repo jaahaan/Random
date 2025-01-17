@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
-
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -17,11 +16,25 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Hello"
         tools:targetApi="31">
+        <activity
+            android:name=".crud.UpdateActivity"
+            android:exported="false" />
+        <activity
+            android:name=".crud.ReadActivity"
+            android:exported="false" />
+        <activity
+            android:name=".crud.CreateActivity"
+            android:exported="false" />
 
+        <activity
+            android:name=".A.EditActivity"
+            android:exported="false" />
+        <activity
+            android:name=".tech.EditTechActivity"
+            android:exported="false" />
         <activity
             android:name=".tech.TechListActivity"
             android:exported="false" />
-
         <activity
             android:name=".tech.AddTechActivity"
             android:exported="false" />
@@ -109,8 +122,7 @@
 
         <meta-data
             android:name="CLOUDINARY_URL"
-            android:value="cloudinary://@myCloudName"/>
+            android:value="CLOUDINARY_URL=cloudinary://894878137588268:WbJvMe88egQcdNzo0cQdpEFjBqk@dvsuhuocv" />
     </application>
-
 
 </manifest>

@@ -10,6 +10,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.cloudinary.android.MediaManager;
+import com.example.hello.D.D;
 import com.example.hello.MainActivity;
 import com.example.hello.R;
 import com.example.hello.auth.SignInActivity;
@@ -48,11 +49,10 @@ public class SplashScreen extends AppCompatActivity {
 
     private void initConfig() {
         Map<String, String> config = new HashMap<>();
-        config.put("cloud_name", "myCloudName");
-        config.put("api_key", "myApiKey");
-        config.put("api_secret", "myApiSecret");
+        config.put("cloud_name", "dvsuhuocv");
+        config.put("api_key", "894878137588268");
+        config.put("api_secret", "WbJvMe88egQcdNzo0cQdpEFjBqk");
 //        config.put("secure", true);
         MediaManager.init(this, config);
-
     }
 }

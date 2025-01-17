@@ -1,9 +1,15 @@
 package com.example.hello.E;
 
 public class ModelE {
-    private String title;
-    private String subtitle;
-    private int imageId;
+    private String title, subtitle, imageUrl, key;
+
+    public ModelE(){}
+    public ModelE(String title, String subtitle, String imageUrl, String key) {
+        this.title = title;
+        this.subtitle = subtitle;
+        this.imageUrl = imageUrl;
+        this.key = key;
+    }
 
     public String getTitle() {
         return title;
@@ -21,11 +27,19 @@ public class ModelE {
         this.subtitle = subtitle;
     }
 
-    public int getImageId() {
-        return imageId;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImageId(int imageId) {
-        this.imageId = imageId;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }

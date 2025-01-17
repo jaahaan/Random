@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TechListActivity extends AppCompatActivity {
-
     private RecyclerView recyclerView;
     private FloatingActionButton floatingActionButton;
     private TextView textView;

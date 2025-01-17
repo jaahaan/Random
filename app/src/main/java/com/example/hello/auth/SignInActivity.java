@@ -51,8 +51,8 @@ public class SignInActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
 
         submit.setOnClickListener(v -> {
-            email = emailEditText.getText().toString();
-            pass = passEditText.getText().toString();
+            email = emailEditText.getText().toString().trim();
+            pass = passEditText.getText().toString().trim();
 
             if (email.isEmpty()){
                 emailEditText.setError("Empty!!");

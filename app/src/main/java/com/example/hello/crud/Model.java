@@ -1,12 +1,11 @@
-package com.example.hello.C;
+package com.example.hello.crud;
 
-public class ModelC {
+public class Model {
     private String title, subtitle, imageUrl, key;
 
-    public ModelC(){
+    public Model(){}
 
-    }
-    public ModelC(String title, String subtitle, String imageUrl, String key) {
+    public Model(String title, String subtitle, String imageUrl, String key) {
         this.title = title;
         this.subtitle = subtitle;
         this.imageUrl = imageUrl;
